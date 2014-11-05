@@ -1,6 +1,5 @@
 #include <iostream>
 #include <thread>
-#include <functional>
 #include "client_socket.h"
 #include "socket_exception.h"
 
