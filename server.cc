@@ -12,7 +12,7 @@ int main(int argc, const char *argv[])
         while (true) {
             ServerSocket new_sock;
             server.accept(new_sock);
-
+            std::cout << "connect accepted" << std::endl;
             try {
                 while (true) {
                     std::string data;
