@@ -11,5 +11,7 @@ public:
 
     const ClientSocket& operator << (const std::string&) const;
     const ClientSocket& operator >> (std::string&) const;
+
+    static void receiveHandler(ClientSocket& client);
 };
 #endif

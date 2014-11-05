@@ -27,3 +27,11 @@ const ClientSocket &ClientSocket::operator>>(std::string &param) const {
 }
 
 
+void ClientSocket::receiveHandler(ClientSocket &client) {
+    std::string reply;
+    while (true) {
+        client >> reply;
+        std::cout << "receive server response:" << std::endl;
+        std::cout << reply << std::endl;
+    }
+}
