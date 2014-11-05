@@ -1,3 +1,4 @@
+#include <iostream>
 #include "client_socket.h"
 #include "socket_exception.h"
 
@@ -24,3 +25,5 @@ const ClientSocket &ClientSocket::operator>>(std::string &param) const {
     }
     return *this;
 }
+
+
