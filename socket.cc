@@ -1,6 +1,6 @@
 #include <iostream>
-#include <errno.h>
 #include <fcntl.h>
+#include <cstring>
 #include "socket.h"
 
 Socket::Socket(): m_sock(-1) {
