@@ -12,26 +12,20 @@ ClientSocket::ClientSocket(std::string host, int port) {
     }
 }
 
-const ClientSocket &ClientSocket::operator<<(const std::string &param) const {
-    if (!Socket::send(param)) {
-        throw SocketException("Could not write to socket.");
-    }
-    return *this;
-}
-
-const ClientSocket &ClientSocket::operator>>(std::string &param) const {
-    if (!Socket::recv(param)) {
-        throw SocketException("Could not read from socket.");
-    }
-    return *this;
-}
-
 
 void ClientSocket::receiveHandler(ClientSocket &client) {
     std::string reply;
     while (true) {
-        client >> reply;
+        client.recv(reply);
         std::cout << "receive server response:" << std::endl;
         std::cout << reply << std::endl;
     }
+}
+
+bool ClientSocket::send(const std::string &message) {
+    return Socket::send(static_cast<Socket&>(*this), message);
+}
+
+int ClientSocket::recv(std::string &message) {
+    return Socket::recv(static_cast<Socket&>(*this), message);
 }

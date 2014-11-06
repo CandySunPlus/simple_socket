@@ -1,7 +1,10 @@
 #include "server_socket.h"
 #include "socket_exception.h"
+#include <iostream>
+#include <list>
+#include <thread>
 
-ServerSocket::ServerSocket(int port) {
+ServerSocket::ServerSocket(const int port) {
     if (!Socket::create()) {
         throw SocketException("Could not create server socket.");
     }
@@ -16,25 +19,80 @@ ServerSocket::ServerSocket(int port) {
 }
 
 ServerSocket::~ServerSocket() {
-}
-
-const ServerSocket& ServerSocket::operator<<(const std::string & s) const {
-    if (!Socket::send(s)) {
-        throw SocketException("Could not write to socket.");
+    std::list<Socket*>::iterator iter;
+    for (iter=clientSockets.begin(); iter!=clientSockets.end(); iter++) {
+        delete (*iter);
     }
-
-    return *this;
 }
 
-const ServerSocket& ServerSocket::operator>>(std::string &s) const {
-    if (!Socket::recv(s)) {
-        throw SocketException("Could not read from socket.");
-    }
-    return *this;
-}
-
-void ServerSocket::accept(ServerSocket &sock) {
+void ServerSocket::accept(Socket &sock) {
     if (!Socket::accept(sock)) {
         throw SocketException("Could not accept socket.");
+    }
+}
+
+void ServerSocket::run() {
+    serviceFlag = true;
+    while(serviceFlag) {
+        if (clientSockets.size() >= static_cast<unsigned int>(MAX_CONNECT_NUM)) {
+            serviceFlag = false;
+        } else {
+            serviceFlag = accept();
+        }
+        sleep(1);
+    }
+}
+
+bool ServerSocket::accept() {
+    Socket* clientSocket = new Socket;
+    accept(*clientSocket);
+    addClient(clientSocket);
+
+    std::thread newThread(&ServerSocket::processMessage, *this, static_cast<void*>(clientSocket));
+
+    return true;
+}
+
+void ServerSocket::addClient(Socket *socket) {
+    clientSockets.push_back(socket);
+    std::cout << "Now " << clientSockets.size() << " Users." << std::endl;
+}
+
+void ServerSocket::deleteClient(Socket *socket) {
+    std::list<Socket*>::iterator iter;
+    for(iter=clientSockets.begin(); iter!=clientSockets.end(); iter++) {
+        if ((*iter)->getAddress() == socket->getAddress() &&
+                (*iter)->getPort() == socket->getPort()) {
+            delete (*iter);
+            clientSockets.erase(iter);
+            std::cout << "Now " << clientSockets.size() << "Users." << std::endl;
+            break;
+        }
+    }
+}
+
+void *ServerSocket::processMessage(void *arg) {
+    std::string message;
+    Socket* clientSocket = static_cast<Socket*>(arg);
+    send(*clientSocket, "Welcome.");
+
+    while(serviceFlag) {
+        recv(*clientSocket, message);
+        if (message == "exit") {
+            send(*clientSocket, "user exit.");
+            deleteClient(clientSocket);
+            break;
+        } else {
+            sendMsgToAllClient(message);
+        }
+        sleep(1);
+    }
+    return NULL;
+}
+
+void ServerSocket::sendMsgToAllClient(const std::string &message) {
+    std::list<Socket*>::iterator iter;
+    for (iter=clientSockets.begin(); iter!=clientSockets.end(); iter++) {
+        send(*(*iter), message);
     }
 }

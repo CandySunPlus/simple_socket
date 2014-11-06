@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fcntl.h>
-#include <cstring>
+#include <string>
 #include "socket.h"
 
 Socket::Socket(): m_sock(-1) {
@@ -53,16 +53,16 @@ bool Socket::accept(Socket &new_socket) const {
     return new_socket.m_sock > 0;
 }
 
-bool Socket::send(const std::string s) const {
-    ssize_t status = ::send(m_sock, s.c_str(), s.size(), SO_NOSIGPIPE);
+bool Socket::send(Socket& socket, const std::string& message) const {
+    ssize_t status = ::send(socket.m_sock, message.c_str(), message.size(), SO_NOSIGPIPE);
     return status != -1;
 }
 
-int Socket::recv(std::string & s) const {
+int Socket::recv(Socket& socket, std::string& message) const {
     char buf[MAX_RECV + 1];
-    s = "";
+    message.clear();
     memset(buf, 0, MAX_RECV + 1);
-    ssize_t status = ::recv(m_sock, buf, MAX_RECV, 0);
+    ssize_t status = ::recv(socket.m_sock, buf, MAX_RECV, 0);
 
     if (status == -1) {
         std::cout << "status == -1 errno == " << errno << " in Socket::recv" << std::endl;
@@ -70,7 +70,7 @@ int Socket::recv(std::string & s) const {
     } else if (status == 0) {
         return 0;
     } else {
-        s = buf;
+        message = buf;
         return (int)status;
     }
 }
@@ -93,7 +93,8 @@ bool Socket::connect(const std::string host, const int port) {
     return status == 0;
 }
 
-void Socket::set_non_blocking(const bool b) {
+void Socket::setNonBlocking(const bool b)
+{
     int opts;
     opts = fcntl(m_sock, F_GETFL);
 
@@ -108,4 +109,12 @@ void Socket::set_non_blocking(const bool b) {
     }
 
     fcntl(m_sock, F_SETFL, opts);
+}
+
+std::string Socket::getAddress() {
+    return inet_ntoa(m_addr.sin_addr);
+}
+
+int Socket::getPort() {
+    return ntohs(m_addr.sin_port);
 }

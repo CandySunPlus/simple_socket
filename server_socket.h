@@ -2,15 +2,24 @@
 #define SERVER_SOCKET_CLASS
 
 #include "socket.h"
+#include <list>
 
-class ServerSocket : private Socket
+class ServerSocket : public Socket
 {
 public:
-    ServerSocket(int port);
+    ServerSocket(const int port);
     ServerSocket(){};
     virtual ~ServerSocket();
-    const ServerSocket& operator << (const std::string&) const;
-    const ServerSocket& operator >> (std::string&) const;
-    void accept(ServerSocket &);
+    void accept(Socket &);
+    void run();
+private:
+    bool accept();
+    void addClient(Socket *);
+    void deleteClient(Socket *);
+    void* processMessage(void* arg);
+    void sendMsgToAllClient(const std::string& message);
+
+    static std::list<Socket*> clientSockets;
+    static bool serviceFlag;
 };
 #endif

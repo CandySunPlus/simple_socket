@@ -3,15 +3,13 @@
 
 #include "socket.h"
 
-class ClientSocket: private Socket
+class ClientSocket: public Socket
 {
 public:
     ClientSocket(std::string host, int port);
     virtual ~ClientSocket(){};
-
-    const ClientSocket& operator << (const std::string&) const;
-    const ClientSocket& operator >> (std::string&) const;
-
+    bool send(const std::string&);
+    int recv(std::string&);
     static void receiveHandler(ClientSocket& client);
 };
 #endif

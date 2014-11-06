@@ -9,7 +9,6 @@
 #include <string>
 #include <arpa/inet.h>
 
-const int MAX_HOST_NAME = 200;
 const int MAX_CONNECT_NUM = 5;
 const int MAX_RECV = 500;
 
@@ -23,12 +22,15 @@ public:
     bool listen() const;
     bool accept(Socket&) const;
     bool connect(const std::string host, const int port);
-    bool send(const std::string) const;
-    int recv(std::string&) const;
-    void set_non_blocking(const bool);
+    bool send(Socket&, const std::string&) const;
+    int recv(Socket&, std::string&) const;
+    void setNonBlocking(const bool);
     bool is_valid() const {return m_sock != -1;}
+    std::string getAddress();
+    int getPort();
+
 private:
     int m_sock;
-    sockaddr_in m_addr;
+    struct sockaddr_in m_addr;
 };
 #endif
