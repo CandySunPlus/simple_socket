@@ -3,6 +3,10 @@
 #include <string>
 #include "socket.h"
 
+#ifndef SO_NOSIGPIPE
+#define SO_NOSIGPIPE MSG_NOSIGNAL
+#endif
+
 Socket::Socket(): m_sock(-1) {
     memset(&m_addr, 0, sizeof(m_addr));
 }
