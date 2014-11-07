@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fcntl.h>
-#include <string>
+#include <cstring>
 #include "socket.h"
 
 #ifndef SO_NOSIGPIPE
