@@ -51,7 +51,7 @@ bool ServerSocket::accept() {
     accept(*clientSocket);
     addClient(clientSocket);
 
-    std::thread newThread(&ServerSocket::processMessage, *this, static_cast<void*>(clientSocket));
+    std::thread newThread(&ServerSocket::processMessage, this, static_cast<void*>(clientSocket));
 
     return true;
 }
