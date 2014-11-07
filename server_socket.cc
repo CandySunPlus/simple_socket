@@ -4,10 +4,10 @@
 #include <list>
 #include <thread>
 
-ServerSocket::ServerSocket(const int port) {
+std::list<Socket*> ServerSocket::clientSockets;
+bool ServerSocket::serviceFlag = true;
 
-    static std::list<Socket*> clientSockets;
-    static bool serviceFlag = true;
+ServerSocket::ServerSocket(const int port) {
 
     if (!Socket::create()) {
         throw SocketException("Could not create server socket.");
