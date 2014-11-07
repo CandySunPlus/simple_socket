@@ -5,6 +5,10 @@
 #include <thread>
 
 ServerSocket::ServerSocket(const int port) {
+
+    static std::list<Socket*> clientSockets;
+    static bool serviceFlag = true;
+
     if (!Socket::create()) {
         throw SocketException("Could not create server socket.");
     }
@@ -32,7 +36,6 @@ void ServerSocket::accept(Socket &sock) {
 }
 
 void ServerSocket::run() {
-    serviceFlag = true;
     while(serviceFlag) {
         if (clientSockets.size() >= static_cast<unsigned int>(MAX_CONNECT_NUM)) {
             serviceFlag = false;
