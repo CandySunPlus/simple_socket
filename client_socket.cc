@@ -15,8 +15,7 @@ ClientSocket::ClientSocket(std::string host, int port) {
 
 void ClientSocket::receiveHandler(ClientSocket &client) {
     std::string reply;
-    while (true) {
-        client.recv(reply);
+    while (client.recv(reply) > 0) {
         std::cout << "receive server response:" << std::endl;
         std::cout << reply << std::endl;
     }
