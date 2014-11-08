@@ -8,15 +8,12 @@ int main(int argc, const char* argv[])
     try {
         ClientSocket client("127.0.0.1", 30000);
         std::string sendBuf;
-//        std::thread receiver(ClientSocket::receiveHandler, std::ref(client));
-
-        std::cout << "Enter string send to server:" << std::endl;
-        getline(std::cin, sendBuf);
-        client.send(sendBuf);
-        std::string message;
-        client.recv(message);
-        std::cout << "receive from server:" << std::endl;
-        std::cout << message << std::endl;
+        std::thread receiver(&ClientSocket::receiveHandler, std::ref(client));
+        while (true) {
+            std::cout << "Enter string send to server:" << std::endl;
+            getline(std::cin, sendBuf);
+            client.send(sendBuf);
+        }
 
     } catch (SocketException& e) {
         std::cout << "Exception was caught:" << e.description() << std::endl;

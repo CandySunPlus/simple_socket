@@ -3,6 +3,7 @@
 
 #include "socket.h"
 #include <list>
+#include <thread>
 
 class ServerSocket : public Socket
 {
@@ -18,7 +19,7 @@ private:
     void deleteClient(Socket *);
     void* processMessage(void* arg);
     void sendMsgToAllClient(const std::string& message);
-
+    std::thread *thread;
     static std::list<Socket*> clientSockets;
     static bool serviceFlag;
 };

@@ -1,8 +1,6 @@
 #include "server_socket.h"
 #include "socket_exception.h"
 #include <iostream>
-#include <list>
-#include <thread>
 
 std::list<Socket*> ServerSocket::clientSockets;
 bool ServerSocket::serviceFlag = true;
@@ -50,9 +48,7 @@ bool ServerSocket::accept() {
     Socket* clientSocket = new Socket;
     accept(*clientSocket);
     addClient(clientSocket);
-
-    std::thread newThread(&ServerSocket::processMessage, this, static_cast<void*>(clientSocket));
-
+    this->thread = new std::thread(&ServerSocket::processMessage, this, static_cast<void*>(clientSocket));
     return true;
 }
 
