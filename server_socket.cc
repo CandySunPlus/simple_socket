@@ -6,7 +6,6 @@ std::list<Socket*> ServerSocket::clientSockets;
 bool ServerSocket::serviceFlag = true;
 
 ServerSocket::ServerSocket(const int port) {
-
     if (!Socket::create()) {
         throw SocketException("Could not create server socket.");
     }
@@ -48,6 +47,7 @@ bool ServerSocket::accept() {
     Socket* clientSocket = new Socket;
     accept(*clientSocket);
     addClient(clientSocket);
+
     this->thread = new std::thread(&ServerSocket::processMessage, this, static_cast<void*>(clientSocket));
     return true;
 }
